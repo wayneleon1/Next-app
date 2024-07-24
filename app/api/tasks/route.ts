@@ -25,3 +25,18 @@ export const POST = async (req: NextRequest) => {
     return NextResponse.json({ status: 400, message: "Error in fetching" });
   }
 };
+
+export const DELETE = async (req: NextRequest) => {
+  try {
+    await db.delete(tasks);
+    return NextResponse.json({
+      status: 200,
+      message: "All tasks deleted successfully",
+    });
+  } catch (err) {
+    return NextResponse.json({
+      status: 400,
+      message: "Error in deleting all tasks",
+    });
+  }
+};
