@@ -1,9 +1,7 @@
-import { pgTable, serial, text, timestamp } from "drizzle-orm/pg-core";
+import { pgTable, uuid, varchar } from "drizzle-orm/pg-core";
 
 export const tasks = pgTable("tasks", {
-  id: serial("id").primaryKey(),
-  desciption: text("description").notNull(),
-  createdAt: timestamp("createdAt").defaultNow().notNull(),
+  id: uuid("id").primaryKey().defaultRandom(),
+  title: varchar("title").notNull(),
+  description: varchar("description").notNull(),
 });
-
-
