@@ -1,5 +1,5 @@
 "use client";
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { Button } from "@/components/ui/button";
 import {
@@ -13,9 +13,20 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
-import { FaTrash } from "react-icons/fa";
-import { FaEdit } from "react-icons/fa";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+import { FaTrash, FaEdit } from "react-icons/fa";
 import { useToast } from "./ui/use-toast";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "./ui/textarea";
 
 interface Task {
   id: number;
@@ -28,30 +39,44 @@ export function TaskList() {
   const [tasks, setTasks] = useState<Task[]>([]);
   const [loading, setLoading] = useState(false);
   const [deleting, setDeleting] = useState(false);
+  const [updating, setUpdating] = useState(false);
+
+  const [editingTask, setEditingTask] = useState<Task | null>(null);
 
   useEffect(() => {
-    async function fetchTasks() {
-      setLoading(true);
-      try {
-        const response = await axios.get("/api/tasks");
-        setTasks(response.data.data);
-      } catch (error) {
-        console.error("Error fetching tasks:", error);
-      } finally {
-        setLoading(false);
-      }
-    }
-
     fetchTasks();
   }, []);
+
+  async function fetchTasks() {
+    setLoading(true);
+    try {
+      const response = await axios.get("/api/tasks");
+      setTasks(response.data.data);
+    } catch (error) {
+      console.error("Error fetching tasks:", error);
+      toast({
+        variant: "destructive",
+        description: "Failed to fetch tasks. Please try again.",
+      });
+    } finally {
+      setLoading(false);
+    }
+  }
 
   async function handleDeleteAll() {
     setDeleting(true);
     try {
       await axios.delete("/api/tasks");
       setTasks([]);
+      toast({
+        description: "All tasks deleted successfully.",
+      });
     } catch (error) {
       console.error("Error deleting tasks:", error);
+      toast({
+        variant: "destructive",
+        description: "Failed to delete tasks. Please try again.",
+      });
     } finally {
       setDeleting(false);
     }
@@ -61,13 +86,40 @@ export function TaskList() {
     setDeleting(true);
     try {
       const response = await axios.delete(`/api/tasks/${id}`);
+      setTasks(tasks.filter((task) => task.id !== parseInt(id)));
       toast({
         description: response.data.message,
       });
     } catch (error) {
-      console.error("Error deleting tasks:", error);
+      console.error("Error deleting task:", error);
+      toast({
+        variant: "destructive",
+        description: "Failed to delete task. Please try again.",
+      });
     } finally {
       setDeleting(false);
+    }
+  }
+
+  async function handleUpdate(updatedTask: Task) {
+    setUpdating(true);
+    try {
+      const response = await axios.patch(
+        `/api/tasks/${updatedTask.id}`,
+        updatedTask
+      );
+      setEditingTask(null);
+      toast({
+        description: "Task updated successfully.",
+      });
+    } catch (error) {
+      console.error("Error updating task:", error);
+      toast({
+        variant: "destructive",
+        description: "Failed to update task. Please try again.",
+      });
+    } finally {
+      setUpdating(false);
     }
   }
 
@@ -81,30 +133,25 @@ export function TaskList() {
       ) : (
         <>
           <div className="flex flex-col gap-2 my-4">
-            {tasks.map((task) => (
-              <div
-                key={task.id}
-                className="flex flex-row items-center justify-between rounded-lg border py-2 px-4"
-              >
-                <div className="space-y-0.5 ">
-                  <div className="text-base font-medium">{task.title}</div>
-                  <div className="text-sm font-light text-gray-500 dark:text-gray-400">
-                    {task.description}
+            {tasks &&
+              tasks.map((task) => (
+                <div
+                  key={task.id}
+                  className="flex flex-row items-center justify-between rounded-lg border py-2 px-4"
+                >
+                  <div className="space-y-0.5 ">
+                    <div className="text-base font-medium">{task.title}</div>
+                    <div className="text-sm font-light text-gray-500 dark:text-gray-400">
+                      {task.description}
+                    </div>
                   </div>
-                </div>
-                <div className="flex gap-2">
-                  <div>
-                    {/*  */}
-
+                  <div className="flex gap-2">
                     <AlertDialog>
                       <AlertDialogTrigger>
                         <FaTrash
                           className="cursor-pointer"
                           size={18}
                           color="crimson"
-                          onClick={() => {
-                            console.log("clicked");
-                          }}
                         />
                       </AlertDialogTrigger>
                       <AlertDialogContent>
@@ -120,9 +167,7 @@ export function TaskList() {
                         <AlertDialogFooter>
                           <AlertDialogCancel>Cancel</AlertDialogCancel>
                           <AlertDialogAction
-                            onClick={() => {
-                              handleDeleteById(task.id.toString());
-                            }}
+                            onClick={() => handleDeleteById(task.id.toString())}
                             className="bg-red-400 hover:bg-red-500"
                           >
                             Delete
@@ -130,13 +175,78 @@ export function TaskList() {
                         </AlertDialogFooter>
                       </AlertDialogContent>
                     </AlertDialog>
-                  </div>
-                  <div>
-                    <FaEdit size={18} className="cursor-pointer" />
+                    <Dialog>
+                      <DialogTrigger asChild>
+                        <FaEdit
+                          size={18}
+                          className="cursor-pointer"
+                          onClick={() => setEditingTask(task)}
+                        />
+                      </DialogTrigger>
+                      <DialogContent className="sm:max-w-[425px]">
+                        <DialogHeader>
+                          <DialogTitle>Edit Task</DialogTitle>
+                          <DialogDescription>
+                            Make changes to your Task here. Click save when
+                            you're done.
+                          </DialogDescription>
+                        </DialogHeader>
+                        <form
+                          onSubmit={(e) => {
+                            e.preventDefault();
+                            if (editingTask) handleUpdate(editingTask);
+                          }}
+                        >
+                          <div className="grid gap-4 py-4">
+                            <div className="flex flex-col items-start gap-4">
+                              <Label htmlFor="title" className="text-left">
+                                Title
+                              </Label>
+                              <Input
+                                id="title"
+                                value={editingTask?.title || ""}
+                                onChange={(e) =>
+                                  setEditingTask((prev) =>
+                                    prev
+                                      ? { ...prev, title: e.target.value }
+                                      : null
+                                  )
+                                }
+                                className="col-span-3"
+                              />
+                            </div>
+                            <div className="flex flex-col items-start gap-4">
+                              <Label
+                                htmlFor="description"
+                                className="text-left"
+                              >
+                                Description
+                              </Label>
+                              <Textarea
+                                id="description"
+                                value={editingTask?.description || ""}
+                                onChange={(e) =>
+                                  setEditingTask((prev) =>
+                                    prev
+                                      ? { ...prev, description: e.target.value }
+                                      : null
+                                  )
+                                }
+                                className="col-span-3"
+                              />
+                            </div>
+                          </div>
+                          <DialogFooter>
+                            <Button type="submit">
+                              {updating ? "Saving..." : "Save changes"}
+                            </Button>
+                          </DialogFooter>
+                        </form>
+                      </DialogContent>
+                    </Dialog>
                   </div>
                 </div>
-              </div>
-            ))}
+              ))}
           </div>
           <AlertDialog>
             <AlertDialogTrigger>

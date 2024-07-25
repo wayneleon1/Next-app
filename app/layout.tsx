@@ -20,7 +20,6 @@ export default async function RootLayout({
 }>) {
   const session = await auth();
 
-  // Ensure the user prop is either the user object or null
   const user = session?.user
     ? {
         id: session.user.id,
