@@ -1,5 +1,3 @@
-import { NavBar } from "@/components/NavBar";
-import { Button } from "@/components/ui/button";
 import {
   Card,
   CardContent,
@@ -9,11 +7,18 @@ import {
 } from "@/components/ui/card";
 import { InputForm } from "@/components/InputForm";
 import { TaskList } from "@/components/TaskList";
+import { auth } from "@/auth";
+import { redirect } from "next/navigation";
 
-export default function Home() {
+export default async function Home() {
+  const session = await auth();
+
+  if (!session?.user) {
+    redirect("/login");
+  }
+
   return (
     <main>
-      <NavBar />
       <div className="container mx-auto grid grid-cols-1 md:grid-cols-2 mt-5 gap-2">
         <div>
           <Card className="w-full">
