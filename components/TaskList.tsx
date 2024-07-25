@@ -45,7 +45,7 @@ export function TaskList() {
 
   useEffect(() => {
     fetchTasks();
-  }, []);
+  }, [fetchTasks]);
 
   async function fetchTasks() {
     setLoading(true);
@@ -188,7 +188,7 @@ export function TaskList() {
                           <DialogTitle>Edit Task</DialogTitle>
                           <DialogDescription>
                             Make changes to your Task here. Click save when
-                            you're done.
+                            you&apos;re done.
                           </DialogDescription>
                         </DialogHeader>
                         <form
