@@ -23,7 +23,7 @@ export default async function Home() {
         <div>
           <Card className="w-full">
             <CardHeader>
-              <CardTitle>Create Tasks</CardTitle>
+              <CardTitle>Create New Task</CardTitle>
               <CardDescription>
                 Create your new task in one-click.
               </CardDescription>

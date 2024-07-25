@@ -1,3 +1,4 @@
+// layout.tsx
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
@@ -19,12 +20,22 @@ export default async function RootLayout({
 }>) {
   const session = await auth();
 
+  // Ensure the user prop is either the user object or null
+  const user = session?.user
+    ? {
+        id: session.user.id,
+        name: session.user.name,
+        email: session.user.email,
+        image: session.user.image,
+      }
+    : null;
+
   return (
     <html lang="en">
       <body className={inter.className}>
         <Toaster />
         <ThemeProvider attribute="class" defaultTheme="system">
-          <NavBar user={session?.user} />
+          <NavBar user={user} />
           {children}
         </ThemeProvider>
       </body>

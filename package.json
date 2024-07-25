@@ -10,6 +10,7 @@
     "migrate": "npx drizzle-kit generate"
   },
   "dependencies": {
+    "@auth/drizzle-adapter": "^1.4.1",
     "@hookform/resolvers": "^3.9.0",
     "@next/env": "^14.2.5",
     "@radix-ui/react-alert-dialog": "^1.1.1",
