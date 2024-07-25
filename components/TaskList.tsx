@@ -13,6 +13,9 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
+import { FaTrash } from "react-icons/fa";
+import { FaEdit } from "react-icons/fa";
+import { useToast } from "./ui/use-toast";
 
 interface Task {
   id: number;
@@ -21,6 +24,7 @@ interface Task {
 }
 
 export function TaskList() {
+  const { toast } = useToast();
   const [tasks, setTasks] = useState<Task[]>([]);
   const [loading, setLoading] = useState(false);
   const [deleting, setDeleting] = useState(false);
@@ -41,11 +45,25 @@ export function TaskList() {
     fetchTasks();
   }, []);
 
-  async function handleDelete() {
+  async function handleDeleteAll() {
     setDeleting(true);
     try {
       await axios.delete("/api/tasks");
       setTasks([]);
+    } catch (error) {
+      console.error("Error deleting tasks:", error);
+    } finally {
+      setDeleting(false);
+    }
+  }
+
+  async function handleDeleteById(id: string) {
+    setDeleting(true);
+    try {
+      const response = await axios.delete(`/api/tasks/${id}`);
+      toast({
+        description: response.data.message,
+      });
     } catch (error) {
       console.error("Error deleting tasks:", error);
     } finally {
@@ -74,6 +92,49 @@ export function TaskList() {
                     {task.description}
                   </div>
                 </div>
+                <div className="flex gap-2">
+                  <div>
+                    {/*  */}
+
+                    <AlertDialog>
+                      <AlertDialogTrigger>
+                        <FaTrash
+                          className="cursor-pointer"
+                          size={18}
+                          color="crimson"
+                          onClick={() => {
+                            console.log("clicked");
+                          }}
+                        />
+                      </AlertDialogTrigger>
+                      <AlertDialogContent>
+                        <AlertDialogHeader>
+                          <AlertDialogTitle>
+                            Are you sure to delete this task?
+                          </AlertDialogTitle>
+                          <AlertDialogDescription>
+                            This action cannot be undone. This will permanently
+                            delete your task.
+                          </AlertDialogDescription>
+                        </AlertDialogHeader>
+                        <AlertDialogFooter>
+                          <AlertDialogCancel>Cancel</AlertDialogCancel>
+                          <AlertDialogAction
+                            onClick={() => {
+                              handleDeleteById(task.id.toString());
+                            }}
+                            className="bg-red-400 hover:bg-red-500"
+                          >
+                            Delete
+                          </AlertDialogAction>
+                        </AlertDialogFooter>
+                      </AlertDialogContent>
+                    </AlertDialog>
+                  </div>
+                  <div>
+                    <FaEdit size={18} className="cursor-pointer" />
+                  </div>
+                </div>
               </div>
             ))}
           </div>
@@ -88,13 +149,16 @@ export function TaskList() {
                 <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
                 <AlertDialogDescription>
                   This action cannot be undone. This will permanently delete
-                  your account and remove your data from our servers.
+                  your task.
                 </AlertDialogDescription>
               </AlertDialogHeader>
               <AlertDialogFooter>
                 <AlertDialogCancel>Cancel</AlertDialogCancel>
-                <AlertDialogAction onClick={handleDelete}>
-                  Continue
+                <AlertDialogAction
+                  onClick={handleDeleteAll}
+                  className="bg-red-400 hover:bg-red-500"
+                >
+                  Delete
                 </AlertDialogAction>
               </AlertDialogFooter>
             </AlertDialogContent>
