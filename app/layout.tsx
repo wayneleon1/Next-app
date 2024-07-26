@@ -32,11 +32,11 @@ export default async function RootLayout({
 
   return (
     <html lang="en">
-      <body className={inter.className}>
+      <body className={`${inter.className} relative`}>
         <Toaster />
         <ThemeProvider attribute="class" defaultTheme="system">
           <NavBar user={user} />
-          <ReactQueryProvider>{children} </ReactQueryProvider>
+          <ReactQueryProvider>{children}</ReactQueryProvider>
         </ThemeProvider>
       </body>
     </html>

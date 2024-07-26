@@ -1,11 +1,5 @@
 "use client";
 
-import { useState } from "react";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { useForm } from "react-hook-form";
-import { z } from "zod";
-import Link from "next/link";
-
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -14,104 +8,29 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from "@/components/ui/form";
-import { Input } from "@/components/ui/input";
-import { useToast } from "@/components/ui/use-toast";
-
-const FormSchema = z.object({
-  email: z.string().email({ message: "Invalid email address." }),
-  password: z
-    .string()
-    .min(6, { message: "Password must be at least 6 characters." }),
-});
+import { FaGithub } from "react-icons/fa";
+import Link from "next/link";
 
 export default function LoginForm() {
-  const { toast } = useToast();
-  const [loading, setLoading] = useState(false);
-  const form = useForm<z.infer<typeof FormSchema>>({
-    resolver: zodResolver(FormSchema),
-    defaultValues: {
-      email: "",
-      password: "",
-    },
-  });
-
-  async function onSubmit(data: z.infer<typeof FormSchema>) {
-    console.log(data);
-  }
-
   return (
-    <div className="md:mt-20">
-      <Card className="mx-auto max-w-sm">
-        <CardHeader>
-          <CardTitle className="text-2xl">Login</CardTitle>
-          <CardDescription>
-            Enter your email below to login to your account
+    <div className="flex justify-center items-center min-h-screen bg-gray-50">
+      <Card className="w-full max-w-sm p-6 shadow-lg rounded-lg bg-white">
+        <CardHeader className="mb-4 text-center">
+          <CardTitle className="text-2xl font-bold text-gray-800">
+            Log in to TaskDev
+          </CardTitle>
+          <CardDescription className="text-gray-600">
+            Continue with GitHub to login to our App
           </CardDescription>
         </CardHeader>
-        <CardContent>
-          <Form {...form}>
-            <form onSubmit={form.handleSubmit(onSubmit)} className="grid gap-4">
-              <FormField
-                control={form.control}
-                name="email"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Email</FormLabel>
-                    <FormControl>
-                      <Input
-                        id="email"
-                        type="email"
-                        placeholder="m@example.com"
-                        required
-                        {...field}
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <FormField
-                control={form.control}
-                name="password"
-                render={({ field }) => (
-                  <FormItem>
-                    <div className="flex items-center">
-                      <FormLabel>Password</FormLabel>
-                    </div>
-                    <FormControl>
-                      <Input
-                        id="password"
-                        type="password"
-                        required
-                        {...field}
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <Button type="submit" disabled={loading} className="w-full">
-                {loading ? "Logging in..." : "Login"}
-              </Button>
-            </form>
-            <Button variant="outline" className="mt-2 w-full">
-              <Link href="/api/auth/signin">Continue with GitHub</Link>
-            </Button>
-          </Form>
-          <div className="mt-4 text-center text-sm">
-            Don&apos;t have an account?{" "}
-            <Link href="/register" className="underline">
-              Sign up
-            </Link>
-          </div>
+        <CardContent className="flex flex-col items-center">
+          <Button
+            variant="outline"
+            className="mt-2 w-full flex items-center justify-center gap-2 border border-gray-300 hover:bg-gray-100"
+          >
+            <FaGithub className="text-xl" />
+            <Link href="/api/auth/signin">Continue with GitHub</Link>
+          </Button>
         </CardContent>
       </Card>
     </div>

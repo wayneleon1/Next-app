@@ -20,7 +20,7 @@ export default async function Home() {
 
   return (
     <main>
-      <div className="container mx-auto grid grid-cols-1 md:grid-cols-2 mt-5 gap-2">
+      <div className="container mx-auto grid grid-cols-1 md:grid-cols-2  gap-2 mt-5 ">
         <div>
           <Card className="w-full">
             <CardHeader>

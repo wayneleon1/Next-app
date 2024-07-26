@@ -20,7 +20,10 @@ export const POST = async (req: NextRequest) => {
       description: description,
     };
     const postTasks = await db.insert(tasks).values(newTasks);
-    return NextResponse.json({ status: 200, message: "Successfully Added" });
+    return NextResponse.json({
+      status: 200,
+      message: "Task successfully Added",
+    });
   } catch (err) {
     return NextResponse.json({ status: 400, message: "Error in fetching" });
   }
