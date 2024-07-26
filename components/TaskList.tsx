@@ -45,7 +45,7 @@ export function TaskList() {
 
   useEffect(() => {
     fetchTasks();
-  }, [fetchTasks]);
+  }, []);
 
   async function fetchTasks() {
     setLoading(true);
