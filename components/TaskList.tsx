@@ -1,5 +1,6 @@
 "use client";
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import axios from "axios";
 import { Button } from "@/components/ui/button";
 import {
@@ -27,6 +28,8 @@ import { useToast } from "./ui/use-toast";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "./ui/textarea";
+import BeatLoader from "react-spinners/BeatLoader";
+import ClipLoader from "react-spinners/ClipLoader";
 
 interface Task {
   id: number;
@@ -34,107 +37,119 @@ interface Task {
   description: string;
 }
 
-export function TaskList() {
-  const { toast } = useToast();
-  const [tasks, setTasks] = useState<Task[]>([]);
-  const [loading, setLoading] = useState(false);
-  const [deleting, setDeleting] = useState(false);
-  const [updating, setUpdating] = useState(false);
+// Function to  Fetch All tasks
+async function fetchTasks() {
+  try {
+    const response = await axios.get("/api/tasks");
+    return response.data.data;
+  } catch (error) {
+    console.error("Error fetching tasks:", error);
+  }
+}
 
+// Function to delete All Tasks
+async function handleDeleteAll() {
+  try {
+    const response = await axios.delete("/api/tasks");
+    return response.data.message;
+  } catch (error) {
+    console.error("Error deleting tasks:", error);
+  }
+}
+
+// Function to delete Task by Id
+async function handleDeleteById(id: string) {
+  try {
+    const response = await axios.delete(`/api/tasks/${id}`);
+    return response.data.message;
+  } catch (error) {
+    console.error("Error deleting task:", error);
+  }
+}
+
+// Function to update Task by Id
+async function handleUpdate(updatedTask: Task) {
+  try {
+    const response = await axios.patch(
+      `/api/tasks/${updatedTask.id}`,
+      updatedTask
+    );
+    return response.data.message;
+  } catch (error) {
+    console.error("Error updating task:", error);
+  }
+}
+
+export function TaskList() {
+  const queryClient = useQueryClient();
+  const { toast } = useToast();
   const [editingTask, setEditingTask] = useState<Task | null>(null);
 
-  useEffect(() => {
-    fetchTasks();
-  }, []);
+  // Query for Handling  fetch all tasks
+  const {
+    data: tasks,
+    error,
+    isLoading: loading,
+  } = useQuery({
+    queryKey: ["Tasks"],
+    queryFn: fetchTasks,
+  });
 
-  async function fetchTasks() {
-    setLoading(true);
-    try {
-      const response = await axios.get("/api/tasks");
-      setTasks(response.data.data);
-    } catch (error) {
-      console.error("Error fetching tasks:", error);
+  // Mutation for Handling  delete all tasks
+  const { isPending: deleting, mutate: deleteAllMutation } = useMutation({
+    mutationFn: handleDeleteAll,
+    onSuccess: (data) => {
       toast({
-        variant: "destructive",
-        description: "Failed to fetch tasks. Please try again.",
+        description: data,
       });
-    } finally {
-      setLoading(false);
-    }
-  }
+      queryClient.invalidateQueries({ queryKey: ["tasks"] });
+    },
+  });
 
-  async function handleDeleteAll() {
-    setDeleting(true);
-    try {
-      await axios.delete("/api/tasks");
-      setTasks([]);
+  // Mutation for Handling delete task by Id
+  const { isPending: isDeleting, mutate: deleteByIdMutation } = useMutation({
+    mutationFn: handleDeleteById,
+    onSuccess: (data) => {
       toast({
-        description: "All tasks deleted successfully.",
+        description: data,
       });
-    } catch (error) {
-      console.error("Error deleting tasks:", error);
-      toast({
-        variant: "destructive",
-        description: "Failed to delete tasks. Please try again.",
-      });
-    } finally {
-      setDeleting(false);
-    }
-  }
+      queryClient.invalidateQueries({ queryKey: ["tasks"] });
+    },
+  });
 
-  async function handleDeleteById(id: string) {
-    setDeleting(true);
-    try {
-      const response = await axios.delete(`/api/tasks/${id}`);
-      setTasks(tasks.filter((task) => task.id !== parseInt(id)));
+  // Mutation for Handling update task
+  const { isPending: updating, mutate: updateTaskMutation } = useMutation({
+    mutationFn: handleUpdate,
+    onSuccess: (data) => {
       toast({
-        description: response.data.message,
+        description: data,
       });
-    } catch (error) {
-      console.error("Error deleting task:", error);
-      toast({
-        variant: "destructive",
-        description: "Failed to delete task. Please try again.",
-      });
-    } finally {
-      setDeleting(false);
-    }
-  }
+      queryClient.invalidateQueries({ queryKey: ["tasks"] });
+    },
+  });
 
-  async function handleUpdate(updatedTask: Task) {
-    setUpdating(true);
-    try {
-      const response = await axios.patch(
-        `/api/tasks/${updatedTask.id}`,
-        updatedTask
-      );
-      setEditingTask(null);
-      toast({
-        description: "Task updated successfully.",
-      });
-    } catch (error) {
-      console.error("Error updating task:", error);
-      toast({
-        variant: "destructive",
-        description: "Failed to update task. Please try again.",
-      });
-    } finally {
-      setUpdating(false);
-    }
+  if (error) {
+    toast({
+      variant: "destructive",
+      description: "Failed to fetch tasks. Please try again.",
+    });
   }
 
   return (
     <div className="p-4 border border-gray-200 dark:border-slate-800 rounded-lg">
       <h2 className="text-xl font-semibold">My Tasks</h2>
       {loading ? (
-        <p>Loading tasks...</p>
+        <div className="flex items-center">
+          <p>Loading tasks</p>
+          <BeatLoader size={8} />
+        </div>
       ) : tasks.length <= 0 ? (
         <p>No tasks available. Try to add new one</p>
       ) : (
         <>
           <div className="flex flex-col gap-2 my-4">
             {tasks &&
-              tasks.map((task) => (
+              tasks.map((task: Task) => (
                 <div
                   key={task.id}
                   className="flex flex-row items-center justify-between rounded-lg border py-2 px-4"
@@ -167,7 +182,9 @@ export function TaskList() {
                         <AlertDialogFooter>
                           <AlertDialogCancel>Cancel</AlertDialogCancel>
                           <AlertDialogAction
-                            onClick={() => handleDeleteById(task.id.toString())}
+                            onClick={() =>
+                              deleteByIdMutation(task.id.toString())
+                            }
                             className="bg-red-400 hover:bg-red-500"
                           >
                             Delete
@@ -194,7 +211,7 @@ export function TaskList() {
                         <form
                           onSubmit={(e) => {
                             e.preventDefault();
-                            if (editingTask) handleUpdate(editingTask);
+                            if (editingTask) updateTaskMutation(editingTask);
                           }}
                         >
                           <div className="grid gap-4 py-4">
@@ -238,7 +255,14 @@ export function TaskList() {
                           </div>
                           <DialogFooter>
                             <Button type="submit">
-                              {updating ? "Saving..." : "Save changes"}
+                              {updating ? (
+                                <div className="flex items-center gap-2">
+                                  <p>Saving</p>
+                                  <ClipLoader size={14} color="white" />
+                                </div>
+                              ) : (
+                                "Save changes"
+                              )}
                             </Button>
                           </DialogFooter>
                         </form>
@@ -251,7 +275,14 @@ export function TaskList() {
           <AlertDialog>
             <AlertDialogTrigger>
               <Button variant="destructive" disabled={deleting}>
-                {deleting ? "Deleting..." : "Delete All Tasks"}
+                {deleting ? (
+                  <p className="flex items-center gap-1">
+                    <span>Deleting</span>
+                    <ClipLoader size={14} color="white" />
+                  </p>
+                ) : (
+                  "Delete All Tasks"
+                )}
               </Button>
             </AlertDialogTrigger>
             <AlertDialogContent>
@@ -265,7 +296,9 @@ export function TaskList() {
               <AlertDialogFooter>
                 <AlertDialogCancel>Cancel</AlertDialogCancel>
                 <AlertDialogAction
-                  onClick={handleDeleteAll}
+                  onClick={() => {
+                    deleteAllMutation();
+                  }}
                   className="bg-red-400 hover:bg-red-500"
                 >
                   Delete

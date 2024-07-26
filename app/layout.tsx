@@ -7,6 +7,7 @@ const inter = Inter({ subsets: ["latin"] });
 import { Toaster } from "@/components/ui/toaster";
 import { NavBar } from "@/components/NavBar";
 import { auth } from "@/auth";
+import ReactQueryProvider from "@/utils/React-query-Provider";
 
 export const metadata: Metadata = {
   title: "Create Task",
@@ -35,7 +36,7 @@ export default async function RootLayout({
         <Toaster />
         <ThemeProvider attribute="class" defaultTheme="system">
           <NavBar user={user} />
-          {children}
+          <ReactQueryProvider>{children} </ReactQueryProvider>
         </ThemeProvider>
       </body>
     </html>

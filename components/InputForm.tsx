@@ -5,6 +5,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import axios from "axios";
+import ClipLoader from "react-spinners/ClipLoader";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -87,7 +88,14 @@ export function InputForm() {
           )}
         />
         <Button type="submit" disabled={loading} className="text-white">
-          {loading ? "Creating..." : "Create Task"}
+          {loading ? (
+            <p className="flex items-center gap-1">
+              <span>Creating</span>
+              <ClipLoader size={14} color="white" />
+            </p>
+          ) : (
+            "Create Task"
+          )}
         </Button>
       </form>
     </Form>
