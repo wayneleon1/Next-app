@@ -10,6 +10,7 @@ import {
 } from "@/components/ui/card";
 import { FaGithub } from "react-icons/fa";
 import Link from "next/link";
+import { SignIn } from "@/components/auth/signin-button";
 
 export default function LoginForm() {
   return (
@@ -24,13 +25,15 @@ export default function LoginForm() {
           </CardDescription>
         </CardHeader>
         <CardContent className="flex flex-col items-center">
-          <Button
+          {/* <Button
             variant="outline"
             className="mt-2 w-full flex items-center justify-center gap-2 border border-gray-300 hover:bg-gray-100"
           >
             <FaGithub className="text-xl" />
+            
             <Link href="/api/auth/signin">Continue with GitHub</Link>
-          </Button>
+          </Button> */}
+          <SignIn />
         </CardContent>
       </Card>
     </div>

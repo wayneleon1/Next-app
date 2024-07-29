@@ -11,7 +11,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 
-import Link from "next/link";
+import { SignOut } from "./auth/signout-button";
 
 interface UserProps {
   user: { name: string; email: string; image: string } | null;
@@ -40,7 +40,7 @@ export const NavBar: React.FC<UserProps> = ({ user }) => {
                     <p className="text-sm">{user.email}</p>
                   </DropdownMenuItem>
                   <DropdownMenuItem>
-                    <Link href="/api/auth/signout"> Logout</Link>
+                    <SignOut />
                   </DropdownMenuItem>
                 </DropdownMenuContent>
               </DropdownMenu>
