@@ -27,7 +27,7 @@ export const NavBar: React.FC<UserProps> = ({ user }) => {
               <DropdownMenu>
                 <DropdownMenuTrigger>
                   <div>
-                    <Avatar>
+                    <Avatar className="border-3 border-blue-400">
                       <AvatarImage src={user.image} alt="@shadcn" />
                       <AvatarFallback>OK</AvatarFallback>
                     </Avatar>

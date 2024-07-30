@@ -8,6 +8,13 @@
       "when": 1721809041915,
       "tag": "0000_purple_medusa",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1722322388974,
+      "tag": "0001_brave_puff_adder",
+      "breakpoints": true
     }
   ]
 }

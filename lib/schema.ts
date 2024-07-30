@@ -11,17 +11,12 @@ import {
 import postgres from "postgres";
 import { drizzle } from "drizzle-orm/postgres-js";
 import type { AdapterAccountType } from "next-auth/adapters";
+import { relations } from "drizzle-orm";
 
 const connectionString = "postgres://postgres:postgres@localhost:5432/drizzle";
 const pool = postgres(connectionString, { max: 1 });
 
 export const db = drizzle(pool);
-
-export const tasks = pgTable("tasks", {
-  id: uuid("id").primaryKey().defaultRandom(),
-  title: varchar("title").notNull(),
-  description: varchar("description").notNull(),
-});
 
 export const users = pgTable("user", {
   id: text("id")
@@ -32,6 +27,26 @@ export const users = pgTable("user", {
   emailVerified: timestamp("emailVerified", { mode: "date" }),
   image: text("image"),
 });
+
+export const userRelations = relations(users, ({ many }) => ({
+  tasks: many(tasks),
+}));
+
+export const tasks = pgTable("tasks", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  title: varchar("title").notNull(),
+  description: varchar("description").notNull(),
+  userId: varchar("user_id")
+    .notNull()
+    .references(() => users.id),
+});
+
+export const tasksRelations = relations(tasks, ({ one }) => ({
+  user: one(users, {
+    fields: [tasks.userId],
+    references: [users.id],
+  }),
+}));
 
 export const accounts = pgTable(
   "account",

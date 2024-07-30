@@ -2,11 +2,16 @@ import { NextResponse, NextRequest } from "next/server";
 import { db } from "@/lib/db";
 import { tasks } from "@/lib/schema";
 import { eq } from "drizzle-orm";
+import { auth } from "@/auth";
 
 export const DELETE = async (
   req: NextRequest,
   { params }: { params: { id: string } }
 ) => {
+  const session = await auth();
+  if (!session) {
+    return NextResponse.json({ status: 401, message: "Not Authorized" });
+  }
   try {
     const { id } = params;
 
@@ -28,6 +33,10 @@ export const GET = async (
   req: NextRequest,
   { params }: { params: { id: string } }
 ) => {
+  const session = await auth();
+  if (!session) {
+    return NextResponse.json({ status: 401, message: "Not Authorized" });
+  }
   try {
     const { id } = params;
 
@@ -53,6 +62,10 @@ export const PATCH = async (
   req: NextRequest,
   { params }: { params: { id: string } }
 ) => {
+  const session = await auth();
+  if (!session) {
+    return NextResponse.json({ status: 401, message: "Not Authorized" });
+  }
   try {
     const { id } = params;
     const data = await req.json();
