@@ -1,8 +1,8 @@
-"use server";
-import { signIn, signOut } from "@/auth";
+'use server';
+import { signIn, signOut } from '@/auth';
 
 export async function HandleSignIn() {
-  await signIn("github", { redirectTo: "/" });
+  await signIn('github', { redirectTo: '/' });
 }
 
 export async function HandleSignOut() {

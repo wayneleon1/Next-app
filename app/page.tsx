@@ -4,18 +4,18 @@ import {
   CardDescription,
   CardHeader,
   CardTitle,
-} from "@/components/ui/card";
+} from '@/components/ui/card';
 
-import { InputForm } from "@/components/InputForm";
-import { TaskList } from "@/components/TaskList";
-import { auth } from "@/auth";
-import { redirect } from "next/navigation";
+import { InputForm } from '@/components/InputForm';
+import { TaskList } from '@/components/TaskList';
+import { auth } from '@/auth';
+import { redirect } from 'next/navigation';
 
 export default async function Home() {
   const session = await auth();
 
   if (!session?.user) {
-    redirect("/login");
+    redirect('/login');
   }
 
   return (

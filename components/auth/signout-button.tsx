@@ -1,5 +1,5 @@
-import { HandleSignOut } from "@/utils/actions";
-import { CiLogout } from "react-icons/ci";
+import { HandleSignOut } from '@/utils/actions';
+import { CiLogout } from 'react-icons/ci';
 
 export function SignOut() {
   return (

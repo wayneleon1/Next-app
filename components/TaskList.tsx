@@ -1,8 +1,8 @@
-"use client";
-import React, { useState } from "react";
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import axios from "axios";
-import { Button } from "@/components/ui/button";
+'use client';
+import React, { useState } from 'react';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import axios from 'axios';
+import { Button } from '@/components/ui/button';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -13,23 +13,23 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
   AlertDialogTrigger,
-} from "@/components/ui/alert-dialog";
+} from '@/components/ui/alert-dialog';
 import {
   Dialog,
   DialogContent,
-  DialogDescription,  
+  DialogDescription,
   DialogFooter,
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from "@/components/ui/dialog";
-import { FaTrash, FaEdit } from "react-icons/fa";
-import { useToast } from "./ui/use-toast";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Textarea } from "./ui/textarea";
-import BeatLoader from "react-spinners/BeatLoader";
-import ClipLoader from "react-spinners/ClipLoader";
+} from '@/components/ui/dialog';
+import { FaTrash, FaEdit } from 'react-icons/fa';
+import { useToast } from './ui/use-toast';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Textarea } from './ui/textarea';
+import BeatLoader from 'react-spinners/BeatLoader';
+import ClipLoader from 'react-spinners/ClipLoader';
 
 interface Task {
   id: number;
@@ -40,20 +40,20 @@ interface Task {
 // Function to  Fetch All tasks
 async function fetchTasks() {
   try {
-    const response = await axios.get("/api/tasks");
+    const response = await axios.get('/api/tasks');
     return response.data.data;
   } catch (error) {
-    console.error("Error fetching tasks:", error);
+    console.error('Error fetching tasks:', error);
   }
 }
 
 // Function to delete All Tasks
 async function handleDeleteAll() {
   try {
-    const response = await axios.delete("/api/tasks");
+    const response = await axios.delete('/api/tasks');
     return response.data.message;
   } catch (error) {
-    console.error("Error deleting tasks:", error);
+    console.error('Error deleting tasks:', error);
   }
 }
 
@@ -63,7 +63,7 @@ async function handleDeleteById(id: string) {
     const response = await axios.delete(`/api/tasks/${id}`);
     return response.data.message;
   } catch (error) {
-    console.error("Error deleting task:", error);
+    console.error('Error deleting task:', error);
   }
 }
 
@@ -76,7 +76,7 @@ async function handleUpdate(updatedTask: Task) {
     );
     return response.data.message;
   } catch (error) {
-    console.error("Error updating task:", error);
+    console.error('Error updating task:', error);
   }
 }
 
@@ -91,47 +91,47 @@ export function TaskList() {
     error,
     isLoading: loading,
   } = useQuery({
-    queryKey: ["Tasks"],
+    queryKey: ['Tasks'],
     queryFn: fetchTasks,
   });
 
   // Mutation for Handling  delete all tasks
   const { isPending: deleting, mutate: deleteAllMutation } = useMutation({
     mutationFn: handleDeleteAll,
-    onSuccess: (data) => {
+    onSuccess: data => {
       toast({
         description: data,
       });
-      queryClient.invalidateQueries({ queryKey: ["tasks"] });
+      queryClient.invalidateQueries({ queryKey: ['tasks'] });
     },
   });
 
   // Mutation for Handling delete task by Id
   const { isPending: isDeleting, mutate: deleteByIdMutation } = useMutation({
     mutationFn: handleDeleteById,
-    onSuccess: (data) => {
+    onSuccess: data => {
       toast({
         description: data,
       });
-      queryClient.invalidateQueries({ queryKey: ["tasks"] });
+      queryClient.invalidateQueries({ queryKey: ['tasks'] });
     },
   });
 
   // Mutation for Handling update task
   const { isPending: updating, mutate: updateTaskMutation } = useMutation({
     mutationFn: handleUpdate,
-    onSuccess: (data) => {
+    onSuccess: data => {
       toast({
         description: data,
       });
-      queryClient.invalidateQueries({ queryKey: ["tasks"] });
+      queryClient.invalidateQueries({ queryKey: ['tasks'] });
     },
   });
 
   if (error) {
     toast({
-      variant: "destructive",
-      description: "Failed to fetch tasks. Please try again.",
+      variant: 'destructive',
+      description: 'Failed to fetch tasks. Please try again.',
     });
   }
 
@@ -209,7 +209,7 @@ export function TaskList() {
                           </DialogDescription>
                         </DialogHeader>
                         <form
-                          onSubmit={(e) => {
+                          onSubmit={e => {
                             e.preventDefault();
                             if (editingTask) updateTaskMutation(editingTask);
                           }}
@@ -221,9 +221,9 @@ export function TaskList() {
                               </Label>
                               <Input
                                 id="title"
-                                value={editingTask?.title || ""}
-                                onChange={(e) =>
-                                  setEditingTask((prev) =>
+                                value={editingTask?.title || ''}
+                                onChange={e =>
+                                  setEditingTask(prev =>
                                     prev
                                       ? { ...prev, title: e.target.value }
                                       : null
@@ -241,9 +241,9 @@ export function TaskList() {
                               </Label>
                               <Textarea
                                 id="description"
-                                value={editingTask?.description || ""}
-                                onChange={(e) =>
-                                  setEditingTask((prev) =>
+                                value={editingTask?.description || ''}
+                                onChange={e =>
+                                  setEditingTask(prev =>
                                     prev
                                       ? { ...prev, description: e.target.value }
                                       : null
@@ -261,7 +261,7 @@ export function TaskList() {
                                   <ClipLoader size={14} color="white" />
                                 </div>
                               ) : (
-                                "Save changes"
+                                'Save changes'
                               )}
                             </Button>
                           </DialogFooter>
@@ -281,7 +281,7 @@ export function TaskList() {
                     <ClipLoader size={14} color="white" />
                   </p>
                 ) : (
-                  "Delete All Tasks"
+                  'Delete All Tasks'
                 )}
               </Button>
             </AlertDialogTrigger>

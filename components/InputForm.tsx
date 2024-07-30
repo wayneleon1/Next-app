@@ -1,13 +1,13 @@
-"use client";
+'use client';
 
-import { useState } from "react";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { useForm } from "react-hook-form";
-import { z } from "zod";
-import axios from "axios";
-import ClipLoader from "react-spinners/ClipLoader";
+import { useState } from 'react';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { useForm } from 'react-hook-form';
+import { z } from 'zod';
+import axios from 'axios';
+import ClipLoader from 'react-spinners/ClipLoader';
 
-import { Button } from "@/components/ui/button";
+import { Button } from '@/components/ui/button';
 import {
   Form,
   FormControl,
@@ -15,17 +15,17 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from "@/components/ui/form";
-import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
-import { useToast } from "@/components/ui/use-toast";
+} from '@/components/ui/form';
+import { Input } from '@/components/ui/input';
+import { Textarea } from '@/components/ui/textarea';
+import { useToast } from '@/components/ui/use-toast';
 
 const FormSchema = z.object({
   title: z.string().min(3, {
-    message: "Title must be at least 3 characters.",
+    message: 'Title must be at least 3 characters.',
   }),
   description: z.string().min(3, {
-    message: "Description must be at least 3 characters.",
+    message: 'Description must be at least 3 characters.',
   }),
 });
 
@@ -35,22 +35,22 @@ export function InputForm() {
   const form = useForm<z.infer<typeof FormSchema>>({
     resolver: zodResolver(FormSchema),
     defaultValues: {
-      title: "",
-      description: "",
+      title: '',
+      description: '',
     },
   });
 
   async function onSubmit(data: z.infer<typeof FormSchema>) {
     setLoading(true);
     try {
-      const response = await axios.post("/api/tasks", data);
+      const response = await axios.post('/api/tasks', data);
       toast({
-        description: "Your Task has been added.",
+        description: 'Your Task has been added.',
       });
       form.reset();
     } catch (error) {
       toast({
-        variant: "destructive",
+        variant: 'destructive',
         description: `Error creating task: ${error}`,
       });
     } finally {
@@ -94,7 +94,7 @@ export function InputForm() {
               <ClipLoader size={14} color="white" />
             </p>
           ) : (
-            "Create Task"
+            'Create Task'
           )}
         </Button>
       </form>

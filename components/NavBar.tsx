@@ -1,7 +1,7 @@
-"use client";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import * as React from "react";
-import { ModeToggle } from "@/components/ui/toggle-mode";
+'use client';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import * as React from 'react';
+import { ModeToggle } from '@/components/ui/toggle-mode';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -9,9 +9,9 @@ import {
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
+} from '@/components/ui/dropdown-menu';
 
-import { SignOut } from "./auth/signout-button";
+import { SignOut } from './auth/signout-button';
 
 interface UserProps {
   user: { name: string; email: string; image: string } | null;
